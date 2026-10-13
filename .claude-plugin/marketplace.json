@@ -1,0 +1,13 @@
+{
+  "name": "ai-workflow",
+  "owner": {
+    "name": "Vuthe Thien Long"
+  },
+  "plugins": [
+    {
+      "name": "ai-workflow",
+      "source": "./",
+      "description": "Approval-gated development workflows and reusable agent skills for Codex and Claude Code"
+    }
+  ]
+}
