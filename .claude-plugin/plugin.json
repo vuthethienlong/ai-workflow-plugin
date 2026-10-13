@@ -1,0 +1,29 @@
+{
+  "name": "ai-workflow",
+  "version": "0.2.0",
+  "description": "Approval-gated development workflows and reusable skills for Codex and Claude Code.",
+  "author": {
+    "name": "Vuthe Thien Long"
+  },
+  "repository": "https://github.com/vuthethienlong/ai-workflow-plugin",
+  "license": "MIT",
+  "keywords": [
+    "workflow",
+    "skills",
+    "codex",
+    "claude-code",
+    "ado",
+    "orca"
+  ],
+  "skills": [
+    "./skills/idea-to-backlog/",
+    "./skills/issue-to-spec/",
+    "./skills/issue-tdd/",
+    "./skills/auto-brainstorm/",
+    "./skills/manual-brainstorm/",
+    "./skills/auto-review/",
+    "./skills/manual-review/",
+    "./skills/auto-implement/",
+    "./skills/ado-orca-smoke-test/"
+  ]
+}

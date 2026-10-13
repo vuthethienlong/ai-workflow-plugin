@@ -1,0 +1,11 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "ai-workflow",
+  "version": "0.2.0",
+  "description": "Approval-gated development workflows and reusable skills for Codex and Claude Code.",
+  "author": {
+    "name": "Vuthe Thien Long"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/vuthethienlong/ai-workflow-plugin"
+}

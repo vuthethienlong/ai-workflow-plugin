@@ -1,0 +1,16 @@
+{
+  "name": "ai-workflow",
+  "plugins": [
+    {
+      "name": "ai-workflow",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      }
+    }
+  ]
+}
