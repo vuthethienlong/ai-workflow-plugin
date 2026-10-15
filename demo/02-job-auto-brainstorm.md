@@ -1,15 +1,12 @@
-# 02 — Job: Auto Brainstorm
+# 02 — Job: Auto Brainstorm (suggestions only)
 
-**Job prompt (click Run):**
+**Orca Job prompt — click Run:**
 
-> Sử dụng Skill `auto-brainstorm` của `ai-workflow`. Truy xuất backlog/Issue references của bước 01 từ Orca state hoặc handover/artifact chung; không tự dựng ý tưởng mới. Phân tích sâu requirements, kiến trúc, alternatives, tradeoffs, risks, acceptance criteria, dependencies; cập nhật brainstorm summary và backlog proposal. Không tạo lại Issues hay PR, không làm thay bước manual brainstorming. Nếu không truy xuất được source, BLOCKED và nêu artifact còn thiếu. Lưu decisions, open questions và NEXT_EXPECTED_STEP=03-manual-brainstorm.
+> Sử dụng Skill `auto-brainstorm` của `ai-workflow`. Truy xuất Issue thật đã tạo ở bước 01 và nguồn handover chung (Orca state khi khả dụng, nếu không là artifact trong repository demo được xác minh). Đọc Issue ở ADO qua worker-owned MCP hoặc GitHub backend đã chọn; ghi lại Issue ID/URL và source revision. Brainstorm **ngay trên Issue hiện có**, làm rõ requirements, acceptance criteria, architecture options, edge cases, risks và dependencies. Tạo `brainstorm-summary` và `suggested-changes` dạng draft với before/after, rationale, impact và outstanding questions. Đề xuất chia Issue hoặc tạo Task nếu thực sự cần nhưng **chỉ dưới dạng suggestion**, không thực hiện. Auto brainstorming không phải quyết định cuối cùng.
 
+> **READ ONLY đối với ADO/GitHub Issues**: tuyệt đối không CREATE, UPDATE, SPLIT, LINK/UNLINK, DELETE, CLOSE/REOPEN, đổi status hoặc MERGE. Không tạo PR. Chuyển proposals sang bước 03 để người dùng thảo luận/chốt và approve; không giả lập approval.
 
+> NEXT_EXPECTED_STEP=03-manual-brainstorm.
 
-## Quy tắc chung
-- Thực thi thật, không mock Issues/PR/reviews/tests/releases; không nhận PASS nếu thiếu bằng chứng.
-- Không hardcode tên ý tưởng, repository, project, đường dẫn máy, worker hay Issue ID.
-- Đọc trạng thái Run/Task, handover và artifacts có thể truy cập trước khi thao tác. Nếu Chat và Job không chia sẻ context, lưu handover vào repository/đường dẫn chung có kiểm chứng; không giả định đồng bộ tự động.
-- Phát hiện artifact/Issue/PR/tag trùng trước khi ghi hoặc retry; không tự tạo trùng.
-- Không giả mạo approval; thao tác bên ngoài cần quyền phù hợp và phê duyệt chính xác khi policy yêu cầu.
-- Kết thúc với STATUS (PASS/PARTIAL/BLOCKED/FAIL), references/URLs, commit SHA nếu có, evidence, blocker và NEXT_EXPECTED_STEP.
+## Kết quả
+`STATUS`, `ISSUE_BACKEND`, `ISSUE_IDS/URLS`, `SOURCE_REVISIONS`, `BRAINSTORM_SUMMARY`, `SUGGESTED_CHANGES`, `HANDOVER_LOCATION`, `NEXT_EXPECTED_STEP`.
