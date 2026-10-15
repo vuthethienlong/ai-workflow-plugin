@@ -1,37 +1,57 @@
 # Portable Orca E2E demo — ai-workflow
 
-Bộ prompt độc lập để **copy sang Orca trên máy khác**, không cần YAML, code Orca mới, ADO giả, hay Todo App hardcode. Đây là tài liệu cấu hình; **không phải Job đã được tạo hoặc chạy trong Orca**.
+Thư mục này chứa **prompts để copy sang Orca máy khác**; không có YAML, không tạo workflow engine, không hardcode Idea/repo/worker/project. Đây **không phải các Job đã được thực thi**.
 
-## Chuẩn bị một lần
+## Setup trên từng máy
 
-1. Cài plugin `ai-workflow` vào agent workers; kiểm tra Skill discovery thực tế.
-2. Chuẩn bị repository demo do người chạy chọn; cấp GitHub read/write, Git và môi trường chạy test/build. Azure DevOps MCP là tùy chọn; khi chưa có, dùng GitHub Issues **thật** sau approval, không báo ADO PASS.
-3. Trong Orca, **Bước 01 là Worker Chat**, không phải Job: mở Worker và gửi prompt trong `01-worker-chat-idea-to-backlog.md`. Ý tưởng được nhập trong cuộc chat.
-4. Lưu prompts `02`, `04`, `05`, `07`, `08`, `09`, `11`, `12` thành những Job độc lập (copy nội dung body của file vào phần prompt). Tên Job theo tên file. **Không chạy khi tạo Job**.
-5. `03` là Worker Chat tương tác; `06`, `10` là điểm duyệt của con người, **không phải Job tự approve**. Release có một phê duyệt riêng ngay trong `11`.
-6. Click Run theo thứ tự; mỗi Job đọc handover/artifacts từ bước trước, không yêu cầu người dùng paste dữ liệu đã lưu. Nếu Orca không hỗ trợ kết nối Chat → Job, lưu handover vào file hoặc GitHub artifact chung để worker kế tiếp có thể lấy.
+1. Cài `ai-workflow` và xác minh Skill discovery; chuẩn bị Orca worker, GitHub, Git và công cụ test/build.
+2. Tạo **Job 00** từ `00-job-environment-check.md`, click Run. Kiểm tra ADO MCP thật (organization, project, work-item types và permissions) và cho phép cấu hình lại + read-only test. Nếu ADO không dùng được, yêu cầu người dùng chấp thuận fallback GitHub Issues thật. Không tự chọn backend hoặc giả lập ADO.
+3. **Bước 01 là Worker Chat**, không phải Job: gửi prompt trong `01-worker-chat-idea-to-backlog.md`, nhập ý tưởng mới; lập backlog và **tạo Issue thật sau approval chính xác**.
+4. Cấu hình Job cho bước **02, 04, 05, 07, 08, 09, 11, 12, 13** bằng cách copy prompt của từng file vào Orca. Không chạy Job lúc setup.
+5. **03 là Worker Chat**; **06 và 10 là human PR approval** (không phải auto Jobs). Bước 11 yêu cầu release approval riêng.
+6. Chạy từng bước theo thứ tự; mỗi bước đọc predecessor output và xác minh gates, không yêu cầu nhập lại ID đã lưu.
 
-## Trình tự
+## Flow thực tế
 
-| Bước | Tên | Loại | Kết quả thật |
-|---|---|---|---|
-| 01 | Idea → Backlog | Worker Chat | Idea, backlog proposal; Issue thật **sau duyệt** |
-| 02 | Auto Brainstorm | Job Run | Brainstorm và điều chỉnh backlog |
-| 03 | Manual Brainstorm | Worker Chat | Quyết định thiết kế |
-| 04 | Issue → Spec + PR | Job Run | Spec/Plan/Tasks, Draft PR |
-| 05 | Review Spec | Job Run, reviewer độc lập | Findings trên đúng PR HEAD |
-| 06 | Human Spec Approval | Người dùng | Approval + merge permission |
-| 07 | Auto Implement / TDD | Job Run | Code và RED/GREEN/REFACTOR evidence |
-| 08 | Implementation PR | Job Run | Draft code PR thật |
-| 09 | Review Implementation | Job Run, reviewer độc lập | Findings trên đúng PR HEAD |
-| 10 | Human Code Approval | Người dùng | Approval + merge permission |
-| 11 | Release | Job Run sau release approval | Build, tag, GitHub Release |
-| 12 | Verify Release | Job Run | Test và release evidence |
+| Step | Mode | Outcome |
+|---|---|---|
+| 00 Environment/ADO preflight | Job / click Run | Skill + ADO/GitHub/tool availability, backend và target được xác minh |
+| 01 Idea → Backlog | Worker Chat | Backlog + ADO Issues thật (hoặc GitHub Issues nếu được phép), sau human approval |
+| 02 Auto Brainstorm | Job / click Run | **READ-ONLY** trên Issue thật, lưu draft suggested changes; **không update ADO** |
+| 03 Manual Brainstorm | Worker Chat | Người dùng chốt suggestions, duyệt thao tác cụ thể, worker update và read-back Issue |
+| 04 Issue → Spec + Draft PR | Job | Spec/Plan/Tasks và PR thật |
+| 05 Independent Review Spec | Job (reviewer khác tác giả) | Findings và recommendation trên exact PR HEAD |
+| 06 Human Spec Approval | Human | Approve SHA hiện tại và cho phép merge thật |
+| 07 Auto Implement + TDD | Job | Code/commits + TDD evidence thật; **chưa tạo PR** |
+| 08 Implementation Draft PR | Job | PR code thật |
+| 09 Independent Review Code | Job (reviewer khác tác giả) | Findings trên exact PR HEAD |
+| 10 Human Code Approval | Human | Approve và cho phép merge code |
+| 11 Build + Release | Job + release approval | Test/build thật, tag và GitHub Release sau duyệt riêng |
+| 12 Verify Release | Job | Verify tag/asset/build thật |
+| 13 Final E2E Report | Job | Link/SHA/log/evidence; không giả lập PASS |
 
-**Lưu ý:** Review chỉ đề xuất approve, không thay thế GitHub human review. Nếu có findings, chuyển worker tác giả sửa trên branch, tạo commit mới rồi chạy lại review. Nếu PR HEAD thay đổi, recommendation cũ hết hiệu lực. Bước 07 **chưa mở PR** để bước 08 thực hiện riêng.
+## Approval + ADO policy
 
-## Kiểm thử và di chuyển máy
+- **00** chỉ kiểm tra read-only, không tạo Work Item.
+- **01** có thể CREATE/LINK Issues thật **chỉ sau human approval của danh sách thao tác** và xác nhận project.
+- **02** chỉ brainstorm và chuẩn bị proposal trên **chính Issues có sẵn**; không CREATE/UPDATE/SPLIT/LINK/DELETE/CLOSE/MERGE.
+- **03** là nơi user chỉnh/chốt; với mọi CREATE, UPDATE, SPLIT, LINK/UNLINK, DELETE, CLOSE/REOPEN, đổi status, hoặc MERGE được đề xuất, phải hiển thị target, before/after, impact, xin approval rõ ràng, kiểm tra revision lại trước khi ghi, read-back sau ghi. Không lấy auto suggestion làm quyết định cuối.
+- Các Spec/Code PR cần independent reviewer và **human approval** trên exact revision. `recommend_approve` không phải human approval; merge hay release không tự động.
 
-Sao chép cả thư mục `demo/` (hoặc clone plugin public), sau đó tạo các Job bằng copy/paste. Đừng copy credentials hoặc Orca Run/Task IDs từ máy nguồn. Bản ghi handover nên chứa `RUN_ID`, `TASK_ID`, `ARTIFACTS`, `ISSUE_URLS`, `PR_URL`, `HEAD_SHA`, `APPROVAL_STATE`, `NEXT_EXPECTED_STEP` phù hợp mỗi bước; chỉ báo những trường thực sự tồn tại.
+## Handover portable giữa Worker Chat và Job
 
-Mọi prompt dùng Skill sẵn có, **không yêu cầu thêm các command wrappers**. Tên slash command phụ thuộc host; nếu cần hãy gọi Skill bằng lời trực tiếp.
+Một **handover artifact dùng chung** là bắt buộc. Trước khi chạy Job 01/02, worker phải chọn và xác minh repository/demo workspace mà cả Chat và Job có thể đọc/ghi; mặc định gợi ý `<demo-repo>/workflow-demo/runs/<run-id>/`, **không** hardcode ổ đĩa hoặc tên repo. Ví dụ các file lưu ở đó: `context.md`, `backlog.md`, `suggested-changes.md`, `decisions.md`, `evidence.md`.
+
+`context.md` ghi tối thiểu (khi áp dụng): `RUN_ID`, `STEP_ID`, `ISSUE_BACKEND`, `AUTHORIZED_TARGET`, `ISSUE_IDS/URLS`, `SOURCE_REVISIONS`, `ARTIFACT_PATHS`, `PR_URL`, `HEAD_SHA`, `APPROVAL_STATE`, `NEXT_EXPECTED_STEP`. Chỉ lưu approval evidence và URL có thể công khai trong phạm vi repo được cấp quyền, **không lưu tokens, PAT, secrets, logs nhạy cảm hoặc nội dung ADO confidential vào repo public**.
+
+Mỗi bước phải:
+1. Đọc trạng thái Orca trước; nếu không thể chia sẻ Chat → Job qua Orca, truy xuất artifact chung theo reference đã được xác minh.
+2. Nếu không có context hoặc thiếu quyền truy cập, trả về `BLOCKED`, không tự đoán Issue ID.
+3. Ghi checkpoint và evidence với `STATUS`, blocker, reference và `NEXT_EXPECTED_STEP`.
+4. Kiểm tra duplicate và revision/approval trước mọi write/retry.
+
+Máy khác cần cài lại plugin, cấu hình lại credentials của từng worker và trỏ đến **đúng artifact shared** của run đang muốn tiếp tục. Không sao chép credentials hoặc giả định Orca tự đồng bộ toàn bộ Chat history.
+
+## Lưu ý kiểm thử
+
+Prompt Markdown không có khả năng tự kích hoạt Skills hoặc thực hiện actions nếu runtime thiếu quyền/công cụ. Review tự thực hiện bởi tác giả **không** được tính independent. Khi có findings phải sửa trên branch và review lại exact HEAD. Không tự approve, merge, close hoặc publish.
