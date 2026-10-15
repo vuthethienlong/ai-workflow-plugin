@@ -1,15 +1,10 @@
-# 03 — Worker Chat: Manual Brainstorm
+# 03 — Worker Chat: Manual Brainstorm + Human Approval
 
-**Đây là chat với người dùng, không phải Job tự chạy.**
+**Chat tương tác thật, không phải Auto Job.**
 
-> Sử dụng `manual-brainstorm` của `ai-workflow`. Đọc backlog bước 01, brainstorm bước 02 và handover thật. Trình bày các phương án và quyết định còn mở; thảo luận với tôi, không tự giả lập câu trả lời của tôi. Cập nhật quyết định thiết kế, acceptance criteria, phạm vi và các artifact dùng chung. Khi tôi xác nhận chốt, ghi rõ ai duyệt, artifact revision và NEXT_EXPECTED_STEP=04-issue-to-spec. Nếu chưa chốt, dừng.
+> Sử dụng Skill `manual-brainstorm` của `ai-workflow`. Đọc Issue thật, source revision và toàn bộ suggestions từ bước 02. Thảo luận từng thay đổi với tôi, xác định quyết định cuối cùng; không mặc định auto-brainstorm đã đúng hoặc được duyệt. Trước khi ghi ADO/GitHub, hiển thị **danh sách thao tác cụ thể** CREATE, UPDATE, LINK/UNLINK, SPLIT, DELETE, CLOSE/REOPEN, status hoặc MERGE nếu được đề xuất, kèm Issue ID, project, before/after và ảnh hưởng. Yêu cầu **human approval rõ ràng cho từng phạm vi thao tác**, không hiểu review recommendation là approval. Nếu chưa approve, lưu draft và dừng. Sau khi approve, đọc lại source revision; nếu đã thay đổi, trình bày diff và xin approve lại. Chỉ thực hiện thao tác đã duyệt bằng công cụ được cấp quyền; tránh duplicate; read-back và lưu ID/URL/revision/evidence. Không tự tạo thêm Issues/Tasks/hierarchy, delete/close/merge ngoài phê duyệt cụ thể. Chốt scope/AC để bước 04 tạo Spec.
 
+> NEXT_EXPECTED_STEP=04-issue-to-spec.
 
-
-## Quy tắc chung
-- Thực thi thật, không mock Issues/PR/reviews/tests/releases; không nhận PASS nếu thiếu bằng chứng.
-- Không hardcode tên ý tưởng, repository, project, đường dẫn máy, worker hay Issue ID.
-- Đọc trạng thái Run/Task, handover và artifacts có thể truy cập trước khi thao tác. Nếu Chat và Job không chia sẻ context, lưu handover vào repository/đường dẫn chung có kiểm chứng; không giả định đồng bộ tự động.
-- Phát hiện artifact/Issue/PR/tag trùng trước khi ghi hoặc retry; không tự tạo trùng.
-- Không giả mạo approval; thao tác bên ngoài cần quyền phù hợp và phê duyệt chính xác khi policy yêu cầu.
-- Kết thúc với STATUS (PASS/PARTIAL/BLOCKED/FAIL), references/URLs, commit SHA nếu có, evidence, blocker và NEXT_EXPECTED_STEP.
+## Kết quả
+`FINAL_DECISIONS`, `APPROVAL_ACTOR`, `APPROVED_OPERATIONS`, `APPROVED_REVISIONS`, `ISSUE_IDS/URLS`, `READBACK_EVIDENCE`, `HANDOVER_LOCATION`, `NEXT_EXPECTED_STEP`.
